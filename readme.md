@@ -52,7 +52,9 @@ const element = <h1>Hello there!</h1>
   }
 }
 
-// 이와 같이 엘리먼트의 type에 HTML 태그 이름이 문자열로 들어가지 않은 경우도 있다. 이런 경우도 자바스크립트 객체로 인식 받는다. 다만 이런 경우에는 type에 HTML태그가 아닌 리액트 컴포넌트의 이름이 들어가있다.
+// 이와 같이 엘리먼트의 type에 HTML 태그 이름이 문자열로 들어가지 않은 경우도 있다. 
+//이런 경우도 자바스크립트 객체로 인식 받는다. 
+//다만 이런 경우에는 type에 HTML태그가 아닌 리액트 컴포넌트의 이름이 들어가있다.
 ```
 ```
 React.createElement(
@@ -86,7 +88,8 @@ function ConfirmDialog(props) {
   )
 }
 
-//위 코드는 createElement() 함수가 실제로 동작하는 과정을 나타낸 코드이다. 이 코드에는 Button 컴포넌트와 ConfirmDialog 컴포넌트가 있는데, ConfirmDialog 컴포넌트가 Button 컴포넌트를 포함하고 있다.
+//위 코드는 createElement() 함수가 실제로 동작하는 과정을 나타낸 코드이다. 
+//이 코드에는 Button 컴포넌트와 ConfirmDialog 컴포넌트가 있는데, ConfirmDialog 컴포넌트가 Button 컴포넌트를 포함하고 있다.
 
 {
     type: 'div',
@@ -109,7 +112,10 @@ function ConfirmDialog(props) {
     } 
 }
 
-//위의 코드는 ConfirmDialog 컴포넌트의 엘리먼트의 모습이다. 첫 번째 children은 type이 HTML 태그인 p 태그이기 때문에 곧바로 렌더링이 될 수 있는 상황이지만, 두번째 children의 type은 HTML 태그가 아린 리액트 컴포넌트 이름인 Button이라서 Button 컴포넌트의 엘리먼트를 생성해서 합쳐진다. 따라서, 아래의 코드가 궁극적인 엘리먼트의 모습이다.
+//위의 코드는 ConfirmDialog 컴포넌트의 엘리먼트의 모습이다. 
+//첫 번째 children은 type이 HTML 태그인 p 태그이기 때문에 곧바로 렌더링이 될 수 있는 상황이다.
+//두번째 children의 type은 HTML 태그가 아린 리액트 컴포넌트 이름인 Button이라서 Button 컴포넌트의 엘리먼트를 생성해서 합쳐진다. 
+//따라서, 아래의 코드가 궁극적인 엘리먼트의 모습이다.
 
 {
   type: 'div',
