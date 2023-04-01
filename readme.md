@@ -1,6 +1,160 @@
 
 # 202130207 문기현의 README
 ---
+## 03/30 5주차
+
+### 오늘 배운 내용 : 엘리먼트 렌더링 & 컴포넌트와 props
+
+#### <b>엘리먼트</b>
+
+##### <b>A.엘리먼트의 정의</b>
+리액트 공식 홈페이지에서는 엘리먼트를 '리액트 앱의 가장 작은 빌딩 블록들' 이라고 정의하며, 리액트에서 배울 엘리먼트는 'DOM 엘리먼트의 가상표현'이라고 표현한다. 
+```
+const element = <h1>Hello there!</h1>
+
+//지난 시간에 JSX 예제 구문에서 엘리먼트가 있다고만 설명했었다. 오늘 더 자세하게 설명하자면, 위의 코드는 변수가 elememt로 되어 있다. 이 코드를 실행 시 대입 연산자의 우측 부분은 리액트의 createElement() 함수를 사용하여 엘리먼트를 생성한다. 그렇게 리액트 엘리먼트가 되는 것이다.
+```
+
+##### <b>B.엘리먼트의 생김새</b>
+리액트 앨리먼트는 자바스크립트 객체 형태로 존재한다. 엘리먼트는 컴포넌트 유형과 속성 및 내부의 모든 자식에 대한 정보를 포한하는 일반적인 자바스크립트 객체이다. 이러한 객체는 불변성을 갖고 있어서 초기 생성시 변경이 불가능하다. 
+```
+// no.1
+{  
+    type: 'button', 
+    props: {
+      calssName: 'bg-green',
+      children: {
+        type: 'b',
+        props: {
+          children: 'Hello, element!'
+        }
+      }
+    }
+}  
+
+//no.2
+{
+  <button class='bg-green'>
+    <b>
+      Hello, elememt!
+    </b>
+  </button>
+}
+
+// type에 HTMLM 태그 이름이 문자열로 들어가는 경우, 엘리먼트는 해당 태그 이름을 가진 DOM Node를 나타내고 props는 속성을 나타낸다. no.1 엘리먼트가 실제로 렌더링 된다면 no.2와 같은 DOM엘리먼트가 된다.
+```
+```
+{
+  type: Button,
+  props: {
+    color: 'green',
+    children: 'Hello, element!'
+  }
+}
+
+// 이와 같이 엘리먼트의 type에 HTML 태그 이름이 문자열로 들어가지 않은 경우도 있다. 이런 경우도 자바스크립트 객체로 인식 받는다. 다만 이런 경우에는 type에 HTML태그가 아닌 리액트 컴포넌트의 이름이 들어가있다.
+```
+```
+React.createElement(
+    type,
+    [props],
+    [...children]
+)
+
+//위의 코드는 createElement()함수로, 자바스크립트 객체를 만드는 역할을 담당한다.
+//첫 번째 파라미터에는 타입이 들어간다. 이 곳에는 HTML 태그 이름이 문자열로 들어가거나 또 다른 리액트 컴포넌트가 들어간다.
+//두 번째 파라미터에는 props가 들어간다. props는 간단하게 보자면 엘리먼트의 속성이다.
+//세 번째 파라미터에는 children이 들어간다. children에는 해당 엘리먼트의 자식 엘리먼트들이 이 파라미터에 들어간다.
+
+
+function Button(props) {
+    return (
+      <button className={`bg-${props.coclr}`}>
+        <b>
+          {props.children}
+        </b>
+      </button>
+    )
+}
+
+function ConfirmDialog(props) {
+  return (
+    <div>
+      <p>내용을 확인하셨으면 확인 버튼을 눌러주세요.</p>
+      <Button color='green'>확인</Button>
+    </div>
+  )
+}
+
+//위 코드는 createElement() 함수가 실제로 동작하는 과정을 나타낸 코드이다. 이 코드에는 Button 컴포넌트와 ConfirmDialog 컴포넌트가 있는데, ConfirmDialog 컴포넌트가 Button 컴포넌트를 포함하고 있다.
+
+{
+    type: 'div',
+    props: {
+      children: [
+        {
+          type: 'p',
+          props: {
+              children: '내용을 확인하셨으면 확인 버튼을 눌러주세요.'
+          }
+        },
+        {
+          type: Button,
+          props: {
+            color: 'green',
+            childern: '확인'
+          }
+        }
+      ]
+    } 
+}
+
+//위의 코드는 ConfirmDialog 컴포넌트의 엘리먼트의 모습이다. 첫 번째 children은 type이 HTML 태그인 p 태그이기 때문에 곧바로 렌더링이 될 수 있는 상황이지만, 두번째 children의 type은 HTML 태그가 아린 리액트 컴포넌트 이름인 Button이라서 Button 컴포넌트의 엘리먼트를 생성해서 합쳐진다. 따라서, 아래의 코드가 궁극적인 엘리먼트의 모습이다.
+
+{
+  type: 'div',
+  props: {
+    chindren: [
+        {
+          type: 'p',
+          props: {
+            children: '내용을 확인하셨으면 확인 버튼을 눌러주세요.'
+          }
+        },
+        {
+            type: 'button',
+            props: {
+              className: 'bg-green',
+              children: {
+                type: 'b',
+                props: {
+                  children: '확인'
+                }
+              }
+            }
+        }
+    ]
+  }
+}
+
+```
+##### <b>c.엘리먼트의 특징</b>
+엘리먼트의 대표적인 특징은 바로 불변성(immutable)이다. 엘리먼트의 불변성은 <b>엘리먼트 생성 후에는 children이나 attributes를 바꿀 수 없다.</b>는 뜻을 가지고 있다. 쉽게 생각하면, 컴포넌트는 붕어빵 틀이고 컴포넌트를 통해 생성된 엘리먼트는 붕어빵 틀에 맞춰서 구워진 붕어빵이라고 생각하면 이해하기 쉽다.
+이를 통해서 빠른 랜더링속도 라는 리액트의 장점을 살릴 수 있다. <b>기존의 엘리먼트를 변경하지 않고, 새로운 앨리먼트를 만들어서 기존의 엘리먼트와 바꿔치기 함으로써, 렌더링 속도를 획기적으로 증가시킬 수 있다. </b>
+
+
+#### <b>엘리먼트 렌더링</b>
+엘리먼트를 생성한 후, 화면에 보여주기 위해서 렌더링이라는 과정이 필요하다. 과정은 다음과 같다.
+```
+
+<div id="root"></div> //01 Root DOM node 선언
+
+//02 
+const element - <h1>안녕, 리액트!</h1>
+ReactDOM.render(element, document.getElementById('root')); //02 엘리먼트 생성 및 root div에 렌더링
+```
+
+---
 ## 03/23 4주차
 
 ### 오늘 배운 내용 : JSX의 개념과 실사용
