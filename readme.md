@@ -246,6 +246,118 @@ reportWebVitals();
 ```
 이 코드들의 목적은 바로 위에 있는 코드와 같다.   단, 이 코드들은 JSX의 방식을 사용하여 훨씬 간결한 형태로 작성할 수 있다.
 
+#### <b>컴포넌트</b>
+웹페이지에서 컴포넌트는 구성요소이다. 리액트의 컴포넌트는 작은 컴포넌트를 모아서 하나의 대형 컴포넌트로 구성하고, 또 이런 컴포넌트들을 모아서 전체 페이지로 구성한다. 앞서 설명한 엘리먼트들은 컴포넌트에 맞춰진 결과물들이다. 객체 지향 개념,붕어빵과 유사하게, 컴포넌트는 클래스,붕어빵 틀의 역할을 수행하고, 엘리먼트는 인스턴스,틀에 찍힌 붕어빵의 역할을 수행한다고 생각하면 편하다.
+
+#### <b>Props</b>
+##### <b>a.props의 개념</b>
+Props에서 Prop는 Property(속성)의 약어이다. props는 붕어빵에서 붕어빵 속에 들어가는 속재료라고 생각하면 쉽다.
+붕어빵에 팥을 넣으면 팥맛 붕어빵이 되고, 슈크림을 넣으면 슈크림맛 붕어빵이 되듯이 리액트 컴포넌트에서 눈에 보이는 글자,색 등의 속성을 변경할 때 사용하는 요소라고 생각하면 쉽다. props는 컴포넌트에 전달할 다양한 정보를 담고 있는 자바스크립트 객체이다. 정리하자면, 엘리먼트는 컴포넌트를 통해 기초적인 특성은 공유하지만, props를 통해 각 엘리먼트마다의 개성을 챙길 수 있다.
+
+##### <b>b.props의 특징</b>
+props는 기본적으로 읽기 전용이다. 이는 엘리먼트를 생성하는 중간에 props를 변경할 수 없다는 뜻이다. 
+함수에는 input을 변경할 수 없어서 항상 같은 output을 출력하는 Pure함수랑 input을 변경할 수 있어서 output을 변경할 수 있는 Impure함수가 있다. 여기서 리액트 컴포넌트는 같은 props에 대하여 항상 같은 결과를 출력해야 하기에 Pure함수의 속성을 보유해야만 한다. 따라서, 리액트 컴포넌트에서는 props를 변경할 수 없으며, 같은 props를 받으면 항상 같은 엘리먼트를 리턴해야한다.
+
+##### <b>c.props 사용법</b>
+```
+function App(props) {
+  return (
+    <Profile
+        name="Kyle"
+        intro="Hi, My name is Kyle."
+        viewCount={1500}
+    />
+  );
+}
+```
+위의 코드는 Profile 컴포넌트에 name,intro,viewCount 라는 속성 부여했다.  앞서 JSX에 대해 배울 떄 "중괄호를 사용하면 반드시 자바스크립트 코드가 들어간다"라고 배웠습니다. 마찬가지로 props에 값을 넣을 때에도 문자열 이외에 정수,변수, 그리고 다른 컴포넌트 등이 들어갈 경우에는 중괄호를 사용해서 감싸주어야 한다.
+```
+function App(props) {
+    return (
+      <Layout 
+        widthi={2560}
+        height={1440}
+        header = {
+          <Header title = "It's Kyle's Blog"/>
+        }
+        footer = {
+          <Footer />
+        }
+      />
+    );
+}
+```
+때로는 위의 코드와 같이 Layout 컴포넌트의 props로는 정숫값을 가진 width, height와 리액트 엘리먼트인 header, footer가 들어온다. 이처럼 JSX를 사용하면 이렇게 쉽게 컴포넌트에 props를 넣을 수 있다.
+
+#### <b>컴포넌트 만들기</b>
+##### <b>a.컴포넌트의 종류</b>
+컴포넌트에는 클래스 컴포넌트와 함수 컴포넌트가 있다. 리액트의 초기 버전에서는 클래스 컴포넌트가 주로 쓰였는데, 여러 불편한 점들이 많았다. 그러한 불편한 부분들을 함수 컴포넌트로 개선하고 극복해냈다.
+##### <b>b.함수 컴포넌트</b>
+함수 컴포넌트는 리액트의 컴포넌트를 일종의 함수처럼 사용하는 방법이다. 아래의 코드를 보면,
+```
+function Welcome(props) {
+    return <h1>Hello, {props.name}</h1>;
+}
+```
+인데, Welcome이라는 이름을 가지고, props객체를 받아서 인사말이 담긴 리액트 엘리먼트를 리턴하는 함수가 된다.
+이와 같은 리액트 컴포넌트를 함수 컴포넌트라 부르며, 간결한 코드가 특징이다.
+
+##### <b>c.클래스 컴포넌트</b>
+클래스 컴포넌트는 JS ES^의 클래스 라는 것을 사용해서 만들어진 형태의 컴포넌트이다. 함수 컴포넌트에 비해서 몇 가지 추가적인 기능을 더 사용할 수 있다.
+```
+class Welcome extexds React.Component {
+    render () {
+        return <h1>Hello, {this.props.name}</h1>
+    }
+}
+```
+함수 컴포넌트와의 가장 큰 차이점은 리액트의 모든 클래스 컴포넌트는 React.Component를 상속받는다는 부분이다.
+
+##### <b>d.컴포넌트 이름 짓기</b>
+컴포넌트의 이름을 지을 때는 항상 대문자로 시작해서 지어야 한다는 점이다. 왜냐하면 리액트는 소문자로 시작하는 컴포넌트를 DOM 태그로 인식하기 때문이다. 
+
+##### <b>e.컴포넌트 렌더링</b>
+```
+// DOM 태그를 사용한 element
+const element = <div />;
+
+// 사용자가 정의한 컴포넌트를 사용한 element
+const element = <Welcome name="Kyle" />;
+```
+```
+funcion welcome(props) {
+    return <h1>안녕, {props.name}</h1>;
+}
+
+const element = <Welcome name="Kyle" />;
+ReactDOM.render(
+    element,
+    document.getElementById('root')
+);
+```
+#### <b>컴포넌트 합성</b>
+컴포넌트 합성은 여러 개의 컴포넌트를 합쳐서 하나의 컴포넌트로 만드는 작업이다. 복잡한 화면을 여러 개의 컴포넌트로 나눠서 구현할 수 있다. 아래는 Welcome 컴포넌트를 사용해서 컴포넌트 합성을 ㅎ는 예제 코드이다
+```
+fuction Welcome(props) {
+    return <h1>Hello, {props.name}</h1>;
+}
+
+function App(props) {
+    return (
+        <div>
+          <Welcome name="Alex" />
+          <Welcome name="Brian" />
+          <Welcome name="Cindy" />
+        </div>
+    )
+}
+
+ReactDOM.render(
+    <App />
+    document.getElementById('root')
+);
+```
+이 코드는 Welcome이라는 컴포넌트 안에 Alex,Brian,Cindy 라는 서로 다른 3개의 컴포넌트가 들어있다. 이를 통해서 복잡한 웹페이지도 어렵지 않게 구성할 수 있다.
 
 ---
 ## 03/23 4주차
