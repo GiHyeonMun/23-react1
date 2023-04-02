@@ -12,7 +12,10 @@
 ```
 const element = <h1>Hello there!</h1>
 
-//지난 시간에 JSX 예제 구문에서 엘리먼트가 있다고만 설명했었다. 오늘 더 자세하게 설명하자면, 위의 코드는 변수가 elememt로 되어 있다. 이 코드를 실행 시 대입 연산자의 우측 부분은 리액트의 createElement() 함수를 사용하여 엘리먼트를 생성한다. 그렇게 리액트 엘리먼트가 되는 것이다.
+//지난 시간에 JSX 예제 구문에서 엘리먼트가 있다고만 설명했었다. 
+//오늘 더 자세하게 설명하자면, 위의 코드는 변수가 elememt로 되어 있다. 
+//이 코드를 실행 시 대입 연산자의 우측 부분은 리액트의 createElement() 함수를 사용하여 엘리먼트를 생성한다. 
+//그렇게 리액트 엘리먼트가 되는 것이다.
 ```
 
 ##### <b>B.엘리먼트의 생김새</b>
@@ -41,7 +44,8 @@ const element = <h1>Hello there!</h1>
   </button>
 }
 
-// type에 HTMLM 태그 이름이 문자열로 들어가는 경우, 엘리먼트는 해당 태그 이름을 가진 DOM Node를 나타내고 props는 속성을 나타낸다. no.1 엘리먼트가 실제로 렌더링 된다면 no.2와 같은 DOM엘리먼트가 된다.
+// type에 HTMLM 태그 이름이 문자열로 들어가는 경우, 엘리먼트는 해당 태그 이름을 가진 DOM Node를 나타내고 props는 속성을 나타낸다. 
+//no.1 엘리먼트가 실제로 렌더링 된다면 no.2와 같은 DOM엘리먼트가 된다.
 ```
 ```
 {
@@ -159,6 +163,84 @@ function ConfirmDialog(props) {
 const element - <h1>안녕, 리액트!</h1>
 ReactDOM.render(element, document.getElementById('root')); //02 엘리먼트 생성 및 root div에 렌더링
 ```
+#### <b>엘리먼트 렌더링 실습</b>
+```
+//tick.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        function tick() {
+            const element = (
+                <div>
+                    <h1>방가워, 리액트!</h1>
+                    <h2>현재 시간 : { new Date().toLocaleTimeString() }</h2>
+                </div>
+            );
+            ReactDOM.render(element, document.getElementById('root'));
+        }   
+        setInterval(tick, 1000);
+    </script>
+</body>
+</html>
+
+//이 코드는 tick()이라는 함수를 정의한다.
+//지금까지 배운 엘리먼트의 원리를 사용하여 초마다 시간을 갱신하여 웹페이지에서 반영하는 방식이다.
+```
+```
+//Clock.jsx
+import React from "react";
+
+function Clock(props) {
+    return (
+        <div>
+            <h1>안녕, 리액트</h1>
+            <h2>현재 시간 : { new Date().toLocaleTimeString() }</h2>
+        </div>
+    );
+}
+export default Clock;
+
+
+//index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
+import Library from './chapter_03/Library'; 
+import Clock from './chapter_04/Clock';
+
+setInterval(() => {
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(
+    <React.StrictMode>
+      <Clock />
+    </React.StrictMode>
+  );
+}, 1000); 
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+
+//이 코드들의 목적은 바로 위에 있는 코드와 같다. 
+//단, 이 코드들은 JSX의 방식을 사용하여 훨씬 간결한 형태로 작성할 수 있다.
+```
+
 
 ---
 ## 03/23 4주차
