@@ -34,7 +34,8 @@ const element = <h1>Hello there!</h1>
       }
     }
 }  
-
+```
+```
 //no.2
 {
   <button class='bg-green'>
@@ -43,10 +44,10 @@ const element = <h1>Hello there!</h1>
     </b>
   </button>
 }
-
-// type에 HTMLM 태그 이름이 문자열로 들어가는 경우, 엘리먼트는 해당 태그 이름을 가진 DOM Node를 나타내고 props는 속성을 나타낸다. 
-//no.1 엘리먼트가 실제로 렌더링 된다면 no.2와 같은 DOM엘리먼트가 된다.
 ```
+
+type에 HTMLM 태그 이름이 문자열로 들어가는 경우, 엘리먼트는 해당 태그 이름을 가진 DOM Node를 나타내고 props는 속성을 나타낸다. no.1 엘리먼트가 실제로 렌더링 된다면 no.2와 같은 DOM엘리먼트가 된다.
+
 ```
 {
   type: Button,
@@ -66,13 +67,16 @@ React.createElement(
     [props],
     [...children]
 )
+```
+위의 코드는 createElement()함수로, 자바스크립트 객체를 만드는 역할을 담당한다.
 
-//위의 코드는 createElement()함수로, 자바스크립트 객체를 만드는 역할을 담당한다.
-//첫 번째 파라미터에는 타입이 들어간다. 이 곳에는 HTML 태그 이름이 문자열로 들어가거나 또 다른 리액트 컴포넌트가 들어간다.
-//두 번째 파라미터에는 props가 들어간다. props는 간단하게 보자면 엘리먼트의 속성이다.
-//세 번째 파라미터에는 children이 들어간다. children에는 해당 엘리먼트의 자식 엘리먼트들이 이 파라미터에 들어간다.
+첫 번째 파라미터에는 타입이 들어간다. 이 곳에는 HTML 태그 이름이 문자열로 들어가거나 또 다른 리액트 컴포넌트가 들어간다.
 
+두 번째 파라미터에는 props가 들어간다. props는 간단하게 보자면 엘리먼트의 속성이다.
 
+세 번째 파라미터에는 children이 들어간다. children에는 해당 엘리먼트의 자식 엘리먼트들이 이 파라미터에 들어간다.
+
+```
 function Button(props) {
     return (
       <button className={`bg-${props.coclr}`}>
@@ -91,10 +95,10 @@ function ConfirmDialog(props) {
     </div>
   )
 }
-
-//위 코드는 createElement() 함수가 실제로 동작하는 과정을 나타낸 코드이다. 
-//이 코드에는 Button 컴포넌트와 ConfirmDialog 컴포넌트가 있는데, ConfirmDialog 컴포넌트가 Button 컴포넌트를 포함하고 있다.
-
+```
+위 코드는 createElement() 함수가 실제로 동작하는 과정을 나타낸 코드이다. 
+이 코드에는 Button 컴포넌트와 ConfirmDialog 컴포넌트가 있는데, ConfirmDialog 컴포넌트가 Button 컴포넌트를 포함하고 있다.
+```
 {
     type: 'div',
     props: {
@@ -115,12 +119,14 @@ function ConfirmDialog(props) {
       ]
     } 
 }
+```
+위의 코드는 ConfirmDialog 컴포넌트의 엘리먼트의 모습이다. 
 
-//위의 코드는 ConfirmDialog 컴포넌트의 엘리먼트의 모습이다. 
-//첫 번째 children은 type이 HTML 태그인 p 태그이기 때문에 곧바로 렌더링이 될 수 있는 상황이다.
-//두번째 children의 type은 HTML 태그가 아린 리액트 컴포넌트 이름인 Button이라서 Button 컴포넌트의 엘리먼트를 생성해서 합쳐진다. 
-//따라서, 아래의 코드가 궁극적인 엘리먼트의 모습이다.
+첫 번째 children은 type이 HTML 태그인 p 태그이기 때문에 곧바로 렌더링이 될 수 있는 상황이다.
 
+두번째 children의 type은 HTML 태그가 아린 리액트 컴포넌트 이름인 Button이라서 Button 컴포넌트의 엘리먼트를 생성해서 합쳐진다. 
+따라서, 아래의 코드가 궁극적인 엘리먼트의 모습이다.
+```
 {
   type: 'div',
   props: {
@@ -195,9 +201,9 @@ ReactDOM.render(element, document.getElementById('root')); //02 엘리먼트 생
 </body>
 </html>
 
-//이 코드는 tick()이라는 함수를 정의한다.
-//지금까지 배운 엘리먼트의 원리를 사용하여 초마다 시간을 갱신하여 웹페이지에서 반영하는 방식이다.
+
 ```
+이 코드는 tick()이라는 함수를 정의한다. 지금까지 배운 엘리먼트의 원리를 사용하여 초마다 시간을 갱신하여 웹페이지에서 반영하는 방식이다.
 ```
 //Clock.jsx
 import React from "react";
@@ -237,9 +243,8 @@ setInterval(() => {
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 
-//이 코드들의 목적은 바로 위에 있는 코드와 같다. 
-//단, 이 코드들은 JSX의 방식을 사용하여 훨씬 간결한 형태로 작성할 수 있다.
 ```
+이 코드들의 목적은 바로 위에 있는 코드와 같다.   단, 이 코드들은 JSX의 방식을 사용하여 훨씬 간결한 형태로 작성할 수 있다.
 
 
 ---
