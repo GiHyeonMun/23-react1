@@ -9,7 +9,7 @@
 
 ##### <b>A.엘리먼트의 정의</b>
 리액트 공식 홈페이지에서는 엘리먼트를 '리액트 앱의 가장 작은 빌딩 블록들' 이라고 정의하며, 리액트에서 배울 엘리먼트는 'DOM 엘리먼트의 가상표현'이라고 표현한다. 
-```
+```js
 const element = <h1>Hello there!</h1>
 
 //지난 시간에 JSX 예제 구문에서 엘리먼트가 있다고만 설명했었다. 
@@ -20,7 +20,7 @@ const element = <h1>Hello there!</h1>
 
 ##### <b>B.엘리먼트의 생김새</b>
 리액트 앨리먼트는 자바스크립트 객체 형태로 존재한다. 엘리먼트는 컴포넌트 유형과 속성 및 내부의 모든 자식에 대한 정보를 포한하는 일반적인 자바스크립트 객체이다. 이러한 객체는 불변성을 갖고 있어서 초기 생성시 변경이 불가능하다. 
-```
+```js
 // no.1
 {  
     type: 'button', 
@@ -35,7 +35,7 @@ const element = <h1>Hello there!</h1>
     }
 }  
 ```
-```
+```js
 //no.2
 {
   <button class='bg-green'>
@@ -48,7 +48,7 @@ const element = <h1>Hello there!</h1>
 
 type에 HTMLM 태그 이름이 문자열로 들어가는 경우, 엘리먼트는 해당 태그 이름을 가진 DOM Node를 나타내고 props는 속성을 나타낸다. no.1 엘리먼트가 실제로 렌더링 된다면 no.2와 같은 DOM엘리먼트가 된다.
 
-```
+```js
 {
   type: Button,
   props: {
@@ -61,7 +61,7 @@ type에 HTMLM 태그 이름이 문자열로 들어가는 경우, 엘리먼트는
 //이런 경우도 자바스크립트 객체로 인식 받는다. 
 //다만 이런 경우에는 type에 HTML태그가 아닌 리액트 컴포넌트의 이름이 들어가있다.
 ```
-```
+```js
 React.createElement(
     type,
     [props],
@@ -76,7 +76,7 @@ React.createElement(
 
 세 번째 파라미터에는 children이 들어간다. children에는 해당 엘리먼트의 자식 엘리먼트들이 이 파라미터에 들어간다.
 
-```
+```js
 function Button(props) {
     return (
       <button className={`bg-${props.coclr}`}>
@@ -98,7 +98,7 @@ function ConfirmDialog(props) {
 ```
 위 코드는 createElement() 함수가 실제로 동작하는 과정을 나타낸 코드이다. 
 이 코드에는 Button 컴포넌트와 ConfirmDialog 컴포넌트가 있는데, ConfirmDialog 컴포넌트가 Button 컴포넌트를 포함하고 있다.
-```
+```js
 {
     type: 'div',
     props: {
@@ -126,7 +126,7 @@ function ConfirmDialog(props) {
 
 두번째 children의 type은 HTML 태그가 아린 리액트 컴포넌트 이름인 Button이라서 Button 컴포넌트의 엘리먼트를 생성해서 합쳐진다. 
 따라서, 아래의 코드가 궁극적인 엘리먼트의 모습이다.
-```
+```js
 {
   type: 'div',
   props: {
@@ -161,7 +161,7 @@ function ConfirmDialog(props) {
 
 #### <b>엘리먼트 렌더링</b>
 엘리먼트를 생성한 후, 화면에 보여주기 위해서 렌더링이라는 과정이 필요하다. 과정은 다음과 같다.
-```
+```js
 
 <div id="root"></div> //01 Root DOM node 선언
 
@@ -170,7 +170,7 @@ const element - <h1>안녕, 리액트!</h1>
 ReactDOM.render(element, document.getElementById('root')); //02 엘리먼트 생성 및 root div에 렌더링
 ```
 #### <b>엘리먼트 렌더링 실습</b>
-```
+```html
 //tick.html
 <!DOCTYPE html>
 <html lang="en">
@@ -204,7 +204,7 @@ ReactDOM.render(element, document.getElementById('root')); //02 엘리먼트 생
 
 ```
 이 코드는 tick()이라는 함수를 정의한다. 지금까지 배운 엘리먼트의 원리를 사용하여 초마다 시간을 갱신하여 웹페이지에서 반영하는 방식이다.
-```
+```js
 //Clock.jsx
 import React from "react";
 
@@ -259,7 +259,7 @@ props는 기본적으로 읽기 전용이다. 이는 엘리먼트를 생성하�
 함수에는 input을 변경할 수 없어서 항상 같은 output을 출력하는 Pure함수랑 input을 변경할 수 있어서 output을 변경할 수 있는 Impure함수가 있다. 여기서 리액트 컴포넌트는 같은 props에 대하여 항상 같은 결과를 출력해야 하기에 Pure함수의 속성을 보유해야만 한다. 따라서, 리액트 컴포넌트에서는 props를 변경할 수 없으며, 같은 props를 받으면 항상 같은 엘리먼트를 리턴해야한다.
 
 ##### <b>c.props 사용법</b>
-```
+```js
 function App(props) {
   return (
     <Profile
@@ -271,7 +271,7 @@ function App(props) {
 }
 ```
 위의 코드는 Profile 컴포넌트에 name,intro,viewCount 라는 속성 부여했다.  앞서 JSX에 대해 배울 떄 "중괄호를 사용하면 반드시 자바스크립트 코드가 들어간다"라고 배웠습니다. 마찬가지로 props에 값을 넣을 때에도 문자열 이외에 정수,변수, 그리고 다른 컴포넌트 등이 들어갈 경우에는 중괄호를 사용해서 감싸주어야 한다.
-```
+```js
 function App(props) {
     return (
       <Layout 
@@ -294,7 +294,7 @@ function App(props) {
 컴포넌트에는 클래스 컴포넌트와 함수 컴포넌트가 있다. 리액트의 초기 버전에서는 클래스 컴포넌트가 주로 쓰였는데, 여러 불편한 점들이 많았다. 그러한 불편한 부분들을 함수 컴포넌트로 개선하고 극복해냈다.
 ##### <b>b.함수 컴포넌트</b>
 함수 컴포넌트는 리액트의 컴포넌트를 일종의 함수처럼 사용하는 방법이다. 아래의 코드를 보면,
-```
+```js
 function Welcome(props) {
     return <h1>Hello, {props.name}</h1>;
 }
@@ -304,7 +304,7 @@ function Welcome(props) {
 
 ##### <b>c.클래스 컴포넌트</b>
 클래스 컴포넌트는 JS ES^의 클래스 라는 것을 사용해서 만들어진 형태의 컴포넌트이다. 함수 컴포넌트에 비해서 몇 가지 추가적인 기능을 더 사용할 수 있다.
-```
+```js
 class Welcome extexds React.Component {
     render () {
         return <h1>Hello, {this.props.name}</h1>
@@ -317,7 +317,7 @@ class Welcome extexds React.Component {
 컴포넌트의 이름을 지을 때는 항상 대문자로 시작해서 지어야 한다는 점이다. 왜냐하면 리액트는 소문자로 시작하는 컴포넌트를 DOM 태그로 인식하기 때문이다. 
 
 ##### <b>e.컴포넌트 렌더링</b>
-```
+```js
 // DOM 태그를 사용한 element
 const element = <div />;
 
@@ -337,7 +337,7 @@ ReactDOM.render(
 ```
 #### <b>컴포넌트 합성</b>
 컴포넌트 합성은 여러 개의 컴포넌트를 합쳐서 하나의 컴포넌트로 만드는 작업이다. 복잡한 화면을 여러 개의 컴포넌트로 나눠서 구현할 수 있다. 아래는 Welcome 컴포넌트를 사용해서 컴포넌트 합성을 ㅎ는 예제 코드이다
-```
+```js
 fuction Welcome(props) {
     return <h1>Hello, {props.name}</h1>;
 }
@@ -366,7 +366,7 @@ ReactDOM.render(
 
 #### <b>JSX</b> 
 JSX는 '자바스크립트의 확장 문법(A syntax extension to JavaScript)'라는 뜻으로, JavaScript와 XML/HTML을 합친 존재이다.
-```
+```js
 const element = <h1>Hello there!</h1>
 
 //위에 보이는 코드와 같이, JSX는 JS에서 쓰이는 const 변수 선언이랑 HTML에서 쓰이는 <h1></h1> 태그 선언을 사용한다. 
@@ -387,7 +387,7 @@ JSX를 사용하면 얻을 수 있는 장점들에는
 JS의 문법을 확장시킨 존재가 JSX이므로, JS에서 사용 가능한 문법은 예외없이 사용할 수 있다. 단, 여기서 XML,HTML의 문법을 적절히 섞어서 사용하면 된다.
 
 #### <b>JSX 예시</b>
-```
+```js
 //Book.jsx
 
 import React from "react";
@@ -403,7 +403,7 @@ function Book(props) {
 
 export default Book;
 ```
-```
+```js
 //Library.jsx
 
 import React from "react";
@@ -421,7 +421,7 @@ function Library(props) {
 
 export default Library;
 ```
-```
+```js
 //index.js
 
 import React from 'react';
