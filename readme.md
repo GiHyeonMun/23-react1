@@ -1,6 +1,385 @@
 
 # 202130207 문기현의 README
 ---
+## 04/06 6주차
+
+### 오늘 배운 내용 : 컴포넌트와 props(컴포넌트 추출) & State와 생애주기
+
+#### <b>컴포넌트 추출</b>
+여러 개의 컴포넌트들을 합쳐서 하나의 컴포넌트를 만드는 작업을 '컴포넌트 합성'이라고 한다. 이와 반대로, 복잡한 컴포넌트를 분리해서 여러 개의 컴포넌트로 나눌 수 있다. 큰 컴포넌트에서 일부를 추출해서 새로운 컴포넌트를 만드는 작업을 '컴포넌트 추출'이라고 한다. 
+```js
+fuction Comment(props) {
+    return (
+        <div className="comment">
+            <div className="user-info">
+                <img className="avatar" 
+                    src={props.author.avatarUrl}
+                    alt={props.author.name}
+                />
+                <div className="user-info-name">
+                    {props.author.name}
+                </div>  
+            </div>
+
+          <div className="comment-text">
+            {props.text}
+          </div>
+
+          <div className="comment-date">
+            {formatDate(props.date)}
+          </div>
+        </div>
+    );
+}
+
+function Avatar(props) {
+  return (
+    <img className="avatar" 
+      src={props.user.avatarUrl}
+      alt={props.user.name}
+    />
+  );
+}
+```
+첫 번째 코드는 Comment라는 컴포넌트이다. Comment는 댓글을 표시하는 컴포넌트인데, 작성작의 프로필 이미지,이름,댓글 내용과 작성일 등을 포함한다. <br>
+두 번째 코드는 Comment에서 사용자의 프로필 이미지에 해당하는 부분을 추출하여 작성한 Avatar라는 컴포넌트이다. props에 기존에 사용하던 author를 user로 변경한 이유는 author보다는 user가 더 보편적이므로 재사용성의 측면에서는 user를 사용하는 편이 더 낫다. 
+```js
+fuction Comment(props) {
+    return (
+        <div className="comment">
+            <div className="user-info">
+                <Avatar user={props.author} />
+                <div className="user-info-name">
+                    {props.author.name}
+                </div>  
+            </div>
+
+          <div className="comment-text">
+            {props.text}
+          </div>
+
+          <div className="comment-date">
+            {formatDate(props.date)}
+          </div>
+        </div>
+    );
+}
+```
+추출했던 Avatar 컴포넌트를 적용한 결과, 프로필 이미지와 관련된 부분이 간결해지고 가독성이 상승된 부분을 확인 할 수 있다.
+```js
+fuction UserInfo(props) {
+  return (
+    <div className="user-Info">
+      <Avatar user={props.user} />
+      <div className="user-info-name">
+        {props.user.name}
+      </div>
+    </div>
+  );
+}
+```
+위 코드는 사용자 정보를 담고 있는 부분을 UserInfo라는 컴포넌트로 추출한 부분이다. 여기서, 처음에 추출했던 Avatar컴포넌트도 함께 추출한 모습을 볼 수 있다. 그리고 재사용성을 고려해서 author를 user로 교체했다.
+```js
+fuction Comment(props) {
+    return (
+        <div className="comment">
+          <UserInfo user={props.author} />
+          <div className="comment-text">
+            {props.text}
+          </div>
+          <div className="comment-date">
+            {formatDate(props.date)}
+          </div>
+        </div>
+    );
+}
+```
+궁극적으로, 두 번에 걸친 컴포넌트 추출을 시행한 결과는 처음에 작성했던 컴포넌트보다 훨씬 간결함을 체감할 수 있다. <br>
+컴포넌트 추출을 시행할 때의 관건은 "기능 단위의 구분"과 "후에 재사용 가능한 형태로 추출"을 항상 기억하고 시행해야 한다.
+앞서 추출했던 Avatar와 UserInfo 컴포넌트는 훗날 다른 웹사이트를 제작할 때에도 재사용 할 수 있다.<br><br>
+
+#### <b>컴포넌트 추출 실습</b>
+```js
+// Comment.jsx
+import React from "react";
+
+const styles = {
+    wrapper: {
+        margin: 8,
+        padding: 8,
+        display: "flex",
+        flexDirection: "row",
+        border: "1px solid grey",
+        borderRadius: 16,
+    },
+    imageContainer: {},
+    image: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+    },
+    contentContainer: {
+        marginLeft: 8,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+    },
+    nameText: {
+        color: "black",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    commentText: {
+        color: "black",
+        fontSize: 16,
+    },
+};
+  
+function Comment(props) {
+    return (
+        <div style={styles.wrapper}>
+            <div style={styles.imageContainer}>
+                <img 
+                    src="./images/Aug00.jpg"
+                    alt="프로필 이미지"
+                    style={styles.image}
+                />
+            </div>
+            <div style={styles.contentContainer}>
+                <span style={styles.nameText}>{props.name}</span>
+                <span style={styles.commentText}>{props.comment}</span>
+            </div>
+        </div>
+    );
+}
+
+export default Comment;
+```
+```js
+// CommentList.jsx
+import React from "react";
+import Comment from "./Comment";
+
+const comments = [
+    {
+        name: "불지옥",
+        comment: "안녕하세요, 불지옥입니다.",
+    },
+    {
+        name: "지옥",
+        comment: "안녕하세요, 지옥입니다.",
+    },
+    {
+        name: "가시지옥",
+        comment: "안녕하세요, 가시지옥입니다.",
+    },
+];
+
+function CommentList(props) {
+    return (
+        <div>
+            {comments.map((comment) => {
+                return (
+                    <Comment name={comment.name} comment={comment.comment} />
+                );
+            })}
+        </div>
+    );
+}
+
+export default CommentList;
+```
+```js
+//index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
+import Library from './chapter_03/Library'; 
+import Clock from './chapter_04/Clock';
+import CommentList from './chapter_05/CommentList';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render (
+    <React.StrictMode>
+      <CommentList />
+    </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+```
+
+#### <b>state</b>
+##### <b>a.state</b>
+state는 리액트 컴포넌트의 상태를 의미한다. 상태의 의미는 정상/비정상의 여부가 아니라 컴포넌트의 데이터를 의미한다.
+정확히는 컴포넌트의 변경 가능한 데이터를 의미한다. State가 면하면 다시 렌더링이 되기에 렌더링과 관련된 값만 state에 포함시켜야 한다.
+##### <b>b.state의 특징</b>
+state는 리액트 만의 특별한 형태가 아닌 단지 JS 객체일 뿐이다. 따라서 앞으로 "<b>state는 JS 객체이다.</b>"라고 기억하면 된다. 
+```js
+class LikeButton extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        liked: false
+      };
+    }
+
+    ...
+}
+```
+위의 코드에는 this.state라는 부분이 나오는데, 이 부분은 현재 컴포넌트의 state를 정의하는 부분이다. 위처럼 정의된 state는 정의된 이후 일반적인 JS 변수를 다루듯이 직접 수정할 수는 없다. 
+```js
+// state를 직접 수정 (잘못된 사용법)
+this.state = {
+  name: 'Inje'
+};
+
+// setState 함수를 통한 수정 (올바른 사용법)
+this.setState({
+  name: 'Inje'
+});
+```
+첫 번째 처럼 state를 직접 수정하면 리액트가 수정된 부분을 제대로 인식하는 데에 실패할 수 있다. 따라서, 리액트가 정확하게 인식하도록 수정하려면 setState 함수를 사용해야 한다. 또한, state는 리액트에서 컴포넌트 렌더링과 관련되어 있어서 setState를 사용하지 않고 수정한다면 개발자의 의도대로 작동하지 않을 가능성이 높다. 고로, "<b>state를 변경할 경우에는 반드시 setState() 함수를 사용해야 한다.</b>
+
+#### <b>생애주기</b>
+사람은 탄생부터 죽음까지 일련의 과정인 '생애주기'가 있듯이, 리액트 컴포넌트에도 생애주기가 존재한다. 이를 "<b>생애주기 함수(Lifecycle Method)</b>라고 부른다.<br>
+사람의 탄생을 출생이라고 명명하듯이, 컴포넌트의 탄생을 마운트(Mount)라고 부르는데, 이때 컴포넌트의 constructor(생성자)가 생행된다. 또한 컴포넌트가 렌더링되며 이후에 componentDidMount() 함수가 호출된다.<br>
+사람은 살면서 신체적, 정신적 변화를 겪듯이, 리액트 컴포넌트도 변화를 겪으면서 여러 번 렌더링 받는다. 이를 업데이트(Update)라고 한다. 업데이트 과정에는 컴포넌트의 props가 변경되거나 setState() 함수 호출에 의해 state가 변경되거나, forceUpdate()라는 강제 업데이트 함수 호출로 인해 컴포넌트가 다시 렌더링된다. 그리고 렌더링 이후에 componentDidUpdate() 함수가 호출된다.<br>
+사람은 결국 사망하듯이 리액트 컴포넌트도 사라지는 과정이 있다. 이를 언마운트(Unmount)라고 한다. 언마운트는 상위 컴포넌트에서 현재 컴포넌트를 더 이상 화면에 표시하지 않게 될 때 발생한다. 언마운트 직전에 componentWillUnmount() 함수가 호출된다.<br>
+이처럼 컴포넌트는 계속 존재하는 것이 아닌 시간의 흐름에 따라 생성되고 업데이트되다가 사라진다는 사실을 알아두면 좀 더 깊게 리액트 컴포넌트를 바라볼 수 있다.
+
+#### <b>실습</b>
+```js
+// Notification.jsx
+import React from "react";
+
+const styles = {
+    wrapper: {
+        margin: 8,
+        padding: 8,
+        display: "flex",
+        flexDirection: "row",
+        border: "1px solid grey",
+        borderRadius: 16,
+    },
+    messageText: {
+        color: "black",
+        fontSize: 16,
+    },
+};
+
+class Notification extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {};
+    }
+
+    render() {
+        return (
+            <div style={styles.wrapper}>
+                <span style={styles.messageText}>
+                    {this.props.message}
+                </span>
+            </div>
+        );
+    }
+}
+
+export default Notification;
+```
+```js
+// NotificationList.jsx
+import React from "react";
+import Notification from "./Notification";
+
+const reservedNotifications = [
+    {
+        id: 1,
+        message: "Hello, I will notice today's plan.",
+    },
+    {
+        id: 2,
+        message: "It's LunchTime.",
+    },
+    {
+        id: 3,
+        message: "We will start Meeting soon.",
+    },
+];
+
+var timer;
+
+class NotificationList extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state ={
+            notifications: [],
+        };
+    }
+
+    componentDidMount() {
+        const { notifications } = this.state;
+        timer = setInterval(() => {
+            if(notifications.length < reservedNotifications.length) {
+                const index = notifications.length;
+                notifications.push(reservedNotifications[index]);
+                this.setState({
+                    notifications: notifications,
+                });
+            } else {
+                clearInterval(timer);
+            }
+        }, 1000);
+    }
+
+    render() {
+        return(
+            <div>
+                {this.state.notifications.map((notification) => {
+                    return <Notification message={notification.message} />;
+                })}
+            </div>
+        );
+    }
+}
+
+export default NotificationList;
+```
+```js
+// index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
+import Library from './chapter_03/Library'; 
+import Clock from './chapter_04/Clock';
+import CommentList from './chapter_05/CommentList';
+import NotificationList from './chapter_06/NotificationList';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render (
+    <React.StrictMode>
+      <NotificationList />
+    </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+
+```
+
+---
 ## 03/30 5주차
 
 ### 오늘 배운 내용 : 엘리먼트 렌더링 & 컴포넌트와 props
