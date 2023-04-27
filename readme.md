@@ -1,6 +1,396 @@
 
 # 202130207 문기현의 README
 ---
+## 04/27 8주차
+
+### 오늘 배운 내용 : 이벤트와 핸들링 & 조건부 렌더링
+
+#### <b>이벤트 처리</b>
+DOM에서 클릭 이벤트를 처리하는 예제 코드
+```js
+<button onclick="activate()">
+    Activate
+</button>
+```
+React에서 클릭 이벤트를 처리하는 예제 코드
+```js
+<button onClick={activate}>
+    Activate
+</button>
+```
+둘의 차이점은 
+1.이벤트 이름이 onclick에서 onClick으로 변경.(Camel case)
+2.전달하려는 함수는 문자열에서 함수 그대로 전달
+
+이벤트가 발생했을 때 해당 이벤트를 처리하는 함수를 "이벤트 핸들러(Event Handler)"라고 한다. 혹은 이벤트가 발생하는 것을 계속 듣고 있다는 의미로 "이벤트 리스너(Event Listener)"라고 하기도 한다.
+
+이벤트 핸들러를 추가하는 방법은 무엇인가?
+
+1. 버튼을 클릭하면 이벤트 핸들러 함수인 handleClick() 함수를 호출하도록 되어 있다.
+2. bind를 사용하지 않으면 this.handleClick은 글로벌 스코프에서 호출되어, undefined로 사용할 수 없기 때문이다.
+3. bind를 사용하지 않으려면 화살표 함수를 사용하는 방법도 있다.
+4. 하지만 클래스 컴포넌트는 사용을 안하다시피 하기에 아래의 내용은 참고만 한다.
+```js
+class Toggle extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { isToggleOn: true };
+
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    this.setState(prevState => ({
+      isToggleOn: !prevState.isToggleOn
+    }));
+  }
+
+  render() {
+    return (
+      <button onClick={this.handleClick}>
+        {this.state.isToggleOn? 'On' : 'Off'}
+      </button>
+    );
+  }
+}
+```
+bind 대신에 화살표 함수를 사용한다면 다음과 같다.
+```js
+// 250페이지 참고
+```
+
+클래스 타입을 함수 타입으로 바꾸면 다음 코드와 같다.
+```js
+function Toggle(props) {
+  const [isToogleOn, setIstoggleOn] = useState(true);
+
+  function handleClick() {
+    setIsToggleOn((isToggleOn) => !isToggleOn);
+  }
+
+  const handleClick = () => {
+    setIsToggleOn((isToggleOn) => !isToggleOn);
+  }
+
+  return (
+    <button onClick={handleCilck}>
+      {isToggleOn ? "On" : "Off"}
+    </button>
+  );
+}
+```
+함수 타입에서 이벤트 핸들러를 정의하는 방법은 두 가지이다. 첫 번째는 함수 안에 함수로 정의하는 방법이랑 두 번째는 화살표 함수를 사용해서 정의하는 방법이다. 함수형에서는 this를 사용하지 않고, onCLick에서 바로 HandleClick을 넘기면 된다.
+
+#### <b>Argument 전달하기</b>
+함수를 정의할 때는 파라미터(Parameter) 혹은 매개변수, 함수를 사용할 때는 아규먼트(Argument) 혹은 인자라고 부른다.
+이벤트 핼들러에 매개변수를 전달해야 하는 경우도 많다.
+```js
+<button onClick={(event) => this.deleteItem(id, event)}>삭제하기</button>
+<button onClick={this.deleteItem.bind(this, id)}>삭제하기</button>
+
+// 코드에 있는 event는 필수가 아니다. 고로, 공백() 으로 둬도 문제가 없다.
+```
+위의 코드는 모두 동일한 역할을 하지만 하나는 화살표 함수를 다른 하나는 bind를 사용했다. event라는 매개변수는 리액트의 이벤트 객체를 의미한다. 두 방법 모두 첫 번째 매개변수는 id이고 두 번째 매개변수로 event가 전달 된다. 첫 번째 코드는 명시적으로 event를 매개변수로 넣어 주었고, 두 번째 코드는 id 이후 두번째 매개변수로 event가 자동 전달 된다(클래스 타입에서 사용하는 방식). 함수형 커모넌트에서 이벤트 핸들러에 매개변수를 전달할 때에는 다음과 같은 방법을 사용한다. 
+```js
+funtion MyBtiion(props) {
+  const handleDelete = (id, event) => {
+    console.log(id, event.target);
+  };
+
+  return (
+    <button onClick={(event) => handleDelete(1, event)}>삭제하기</button>
+  );
+}
+```
+
+#### <b>실습</b>
+```js
+// ConfirmButton.jsx
+import { useState } from "react";
+
+function ConfirmButton(props) {
+    const [isConfirmed, setIsConfirmed] = useState(false);
+
+    const handleConfirm = () => {
+        setIsConfirmed((prevIsConfirmed) => !prevIsConfirmed);
+    };
+
+    return (
+        <button onClick={handleConfirm} disabled={isConfirmed}>
+            {isConfirmed ? "Confirmed" : "Confirm"}
+        </button>
+    );
+}
+
+export default ConfirmButton;
+```
+```js
+// index.js
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
+//import Library from './chapter_03/Library'; 
+//import Clock from './chapter_04/Clock';
+//import CommentList from './chapter_05/CommentList';
+//import NotificationList from './chapter_06/NotificationList';
+//import Accommodate from './chapter_07/Accommodate';
+//import midterm from './midterm';
+import ConfirmButton from './chapter_08/ConfirmButton';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render (
+    <React.StrictMode>
+      <ConfirmButton />
+    </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+```
+#### <b>조건부 렌더링</b>
+조건부 렌더링에서 조건이란 우리가 알고있는 조건문의 조건이다.
+```js
+function Greeting(props) {
+  const isLoggedIn = props.isLoggedIn;
+  if(isLoggedIn) {
+    return <UserGreeting />;
+  }
+  return <GuestGreeting />;
+}
+```
+props로 전달 받은 isLoggedIn이 true이면 <UserGreeting />을, false면 <GuestGreeting />을 return한다. 이와 같은 렌더링을 조건부 렌더링이라 한다.
+
+#### <b>엘리먼트 변수</b>
+렌더링 받아야 할 컴포넌트를 변수처럼 사용하는 방법이 엘리먼트 변수이다.
+```js
+funtion LoginControl(props) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLoginClick = () => {
+    setIsLoggedIn(true);
+  }
+
+  const handleLogoutClick = () => {
+    setIsLoggedIn(false);
+  }
+
+  let button;
+  if(isLoggedIn) {
+    button = <LogoutButton onClick={handleLogoutClick} />;
+  } else {
+    button = <LoginButton onClick={handleLoginClick} />;
+  }
+
+  return (
+    <div>
+      <Greeting isLoggedIn={isLoggedIn}>
+      {button}
+    </div>
+  )
+}
+```
+위의 코드와 같이 state에 따라 button 변수에 컴포넌트의 객체를 저장하여 return문에서 사용하고 있다.
+
+#### <b>인라인 조건</b>
+필요한 곳에 조건문을 직접 넣어 사용하는 방법으로 다음과 같은 방법들이 있다.<br><br>
+  1.인라인 if<br>
+  if문을 직접 사용하지 않고, 동일한 효과를 내기 위해 && 논리 연산자를 사용한다.
+  &&연산자의 성질에 따라 첫 조건이 거짓이면 두 번째 조건은 판단하지 않는다. (계산단축)
+  ```
+  true && expression -> expression
+  false && expression -> false
+  ```
+  예시는 다음과 같다.
+  ```js
+  function MailBox(props) {
+    const unreadMessages = props.unreadMessages;
+
+    return (
+      <div>
+        <h1>안녕하세요</h1>
+        {unreadMessages.length > 0 &&
+            <h2>
+              현재 {unreadMessages.length}개의 안읽은 메세지가 있습니다.
+            </h2>
+        }
+      </div>
+    );
+  }
+  ```
+  ```js
+  // 274 페이지 참고
+  ```
+  2.인라인 If-Else<br>
+  삼항 연산자를 사용한다(조건문 ? 참 : 거짓). 문자열이나 엘리먼트를 넣어서 사용할 수도 있다.
+  ```js
+  function UserStatus(props) {
+    return (
+      <div>
+        이 사용자는 현재 <b>{props.isLoggedIn ? '로그인' : '비로그인'}</b> 상태입니다.
+      </div>
+    )
+  }
+  ```
+  ```js
+  funtion LoginControl(props) {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    const handleLoginClick = () => {
+      setIsLoggedIn(true);
+    }
+
+    const handleLogoutClick = () => {
+      setIsLoggedIn(false);
+    }
+
+    return (
+      <div>
+        <Greeting isLoggedIn={isLoggedIn} />
+        {isLoggedIn 
+          ? <LogoutButton onClick={handleLogoutClick} />
+          : <LoginButton onClick={handleLoginClick} />
+        }
+      </div>
+    )
+  }
+  ```
+#### <b>컴포넌트 렌더링 막기</b>
+컴포넌트를 렌더링하고 싶지 않을 때에는 null을 리턴한다.
+```js
+function WarningBanner(props) {
+  if(!props.warning) {
+    return null;
+  }
+
+  return (
+    <div>Warning!</div>
+  );
+}
+```
+
+```js
+function MainPage(props) {
+  const [showWarning, setShowwarning] = useState(false);
+
+  const handleToggleClick = () => {
+    setShowWarning(prevShowWarning => !prevShowWarning);
+  }
+
+  return (
+    <div>
+      <WarningBanner warning={showWarning} />
+      <button onClick={handleToggleClick}>
+        {showWarning ? 'Hide' : 'Show'}
+      </button>
+    </div>
+  )
+}
+```
+
+#### <b>실습</b>
+```js
+// Toolbar.jsx
+import React from "react";
+
+const styles = {
+    wrapper: {
+        padding: 16,
+        display: "flex",
+        flexDirection: "row",
+        borderBottom: "1px solid grey",
+    },
+    greeting: {
+      marginRight: 8,  
+    },
+};
+
+function Toolbar(props) {
+    const { isLoggedIn, onClickLogin, onClickLogout } = props;
+
+    return (
+        <div style={styles.wrapper}>
+            {isLoggedIn && <span style={styles.greeting}>환영합니다.</span>}
+
+            {isLoggedIn ? (
+                <button onClick={onClickLogout}>로그아웃</button>
+            ) : (
+                <button onClick={onClickLogin}>로그인</button>
+            )}
+        </div>
+    );
+}
+
+export default Toolbar;
+```
+```js
+// LandingPage.jsx
+import React, { useState } from "react";
+import Toolbar from "./Toolbar";
+
+function LandingPage(props) {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    const onClickLogin = () => {
+        setIsLoggedIn(true);
+    };
+
+    const onClickLogout = () => {
+        setIsLoggedIn(false);
+    };
+
+    return (
+        <div>
+            <Toolbar 
+                isLoggedIn={isLoggedIn}
+                onClickLogin={onClickLogin}
+                onClickLogout={onClickLogout}
+            />
+            <div style={{ padding: 16 }}>소플과 함께하는 리액트 공부</div>
+        </div>
+    );
+}
+
+export default LandingPage;
+```
+```js
+// index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
+//import Library from './chapter_03/Library'; 
+//import Clock from './chapter_04/Clock';
+//import CommentList from './chapter_05/CommentList';
+//import NotificationList from './chapter_06/NotificationList';
+//import Accommodate from './chapter_07/Accommodate';
+//import midterm from './midterm';
+//import ConfirmButton from './chapter_08/ConfirmButton';
+import LandingPage from './chapter_09/LandingPage';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render (
+    <React.StrictMode>
+      <LandingPage />
+    </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+
+```
+
+
 ## 04/13 7주차
 
 ### 오늘 배운 내용 : 훅(hook)
