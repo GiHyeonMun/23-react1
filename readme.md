@@ -1,7 +1,396 @@
 
 # 202130207 문기현의 README
 ---
-## 04/27 8주차
+## 05/04 10주차
+
+### 오늘 배운 내용 : 리스트와 키 & 폼
+
+#### <b>A.리스트와 키란 무엇인가?</b>
+리스트는 JS의 변수나 객체를 하나의 변수로 묶어놓은 배영과 같은 존재이다. 키는 각 객체나 아이템을 구분할 수 있는 고유의 값을 의미한다. 리액트에서는 배열과 키를 사용하는 반복되는 다수의 엘리먼트를 쉽게 렌더링할 수 있다.
+
+#### <b>B.여러 개의 컴포넌트 렌더링 하기</b>
+예시의 AirBnB의 화면처럼 같은 컴포넌트를 화면에 반복적으로 나타내야 할 경우 배열에 덜어있는 엘리먼트를 map()함수를 사용하여 렌더링 한다.
+다음은 numbers 배열에 들어있는 각각의 요소를 map()를 사용하여 하나씩 추출하여, 2를 곱한 후 doubled라는 배열에 다시 넣는 코드이다.
+```js
+const doubled = numbers.map((number) => number * 2);
+```
+
+다음은 리액트에서 map()함수를 사용한 예제이다.
+```js
+const numbers = [1, 2, 3, 4, 5];
+const listItems = numbers.map((number) =>
+      <li>{number}</li>
+);
+```
+```js
+ReactDOM.render(
+  <ul>{listItems}</ul>,
+  document.getElementById('root')
+);
+```
+```js
+ReactDOM.render(
+  <ul>
+    <li>{1}</li>
+    <li>{2}</li>
+    <li>{3}</li>
+    <li>{4}</li>
+    <li>{5}</li>
+  </ul>,
+  document.getElementById('root')
+);
+```
+위 코드를 렌더링 하면 다음과 같은 출력 결과를 볼 수 있다.
+```
+*1
+*2
+*3
+*4
+*5
+```
+#### <b>C.기본적인 리스트 컴포넌트</b>
+앞서 작성한 코드를 별도의 컴포넌트로 분리하면 다음과 같다.
+이 컴포넌트는 props로 받은 숫자를 numbers로 받아 리스트로 렌더링해 준다.
+```js
+function NumberList(props) {
+  const {numbers} = props;
+
+  const listItems = numbers.map((number) =>
+      <li>{number}</li>
+  );
+
+  return (
+    <ul>{listItems}</ul>
+  );
+}
+
+const numbers = [1, 2, 3, 4, 5];
+ReactDOM.render(
+  <NumberList numbers={numbers} />,
+  document.getElementById('root')
+);
+```
+단, 이 코드를 실행하면 "리스트 아이템에 반드시 키가 있어야 한다" 는 경고 문구를 받는다. 이는 각각의 아이템에 key props가 없기 때문이다.
+
+#### <b>D.리스트의 키에 대해 알아보기</b>
+리스트에서의 키는 "리스트에서 아이템을 구별하기 위한 고유한 문자열" 이다. 이 키는 리스트에서 어떤 아이템이 변경,추가 또는 제거되엇는지 구분하기 위해 사용한다. 키는 같은 리스트에 있는 엘리먼트 사이에서만 고유한 값이면 된다.<br>
+아래는 고유한 id를 보유한 리스트들을 만드는 방법이다.<br>
+```js
+// key값으로 숫자 사용
+
+const numbers = [1,2,3,4,5];
+const listItems = numbers.map((number) => 
+      <li key={number.toString()}>
+        {number}
+      </li>
+);
+```
+단, numbers배열에 중복되는 숫자가 있다면, 고유해야하는 id의 속성을 위반하기에 id가 중복된다는 경고가 출력되니 조심해야 한다.
+```js
+// key값으로 index를 사용하기
+
+const todoItems = todos.map((todo) =>
+    <li key={todo.id}>
+      {todo.text}
+    </li>
+);
+```
+단, 배열에서 아이템의 순서가 바뀔 수 있는 경우에는 기기의 성능과 컴포넌트의 state에 악영향을 미칠 수 있어서 키값으로 index를 사용하는 것을 권장하지 않는다. <br>
+리액트에서는 키를 명시적으로 넣어 주지 않으면 기본적으로 이 인텍스 값을 키값으로 사용한다.
+```js
+const todoItems = todos.map((todo,index) =>
+    <li key={index}>
+      {todo.text}
+    </li>
+);
+```
+
+#### <b>E.실습 : 리스트와 키를 사용하여 간이 출석부 제작</b>
+```js
+// AttendanceBook.jsx
+
+import React from "react";
+
+const students = [
+    {
+        id : 1,
+        name : "Temple",
+    },
+    {
+        id : 2,
+        name : "Hospitaller",
+    },
+    {
+        id : 3,
+        name : "Teutonic",
+    },
+    {
+        id : 4,
+        name : "Santiago",
+    },
+];
+
+function AttendanceBook(props) {
+    return (
+        <ul>
+            {students.map((students) => {
+                return <li>key={students.id} {students.name}</li>
+            } )}
+        </ul>
+    );
+}
+
+export default AttendanceBook;
+```
+```js
+// index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
+//import Library from './chapter_03/Library'; 
+//import Clock from './chapter_04/Clock';
+//import CommentList from './chapter_05/CommentList';
+//import NotificationList from './chapter_06/NotificationList';
+//import Accommodate from './chapter_07/Accommodate';
+//import midterm from './midterm';
+//import ConfirmButton from './chapter_08/ConfirmButton';
+//import LandingPage from './chapter_09/LandingPage';
+import AttendanceBook from './chapter_10/AttendanceBook';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render (
+    <React.StrictMode>
+      <AttendanceBook />
+    </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+```
+
+#### <b>A.폼이란</b>
+폼은 일반적으로 사용자로부터 정보를 입력받기 위한 양식이다.
+
+#### <b>B.제어 컴포넌트</b>
+제어 컴포넌트는 사용자가 입력한 값에 접근하고 제어할 수 있도록 동작하는 컴포넌트이다.
+다음 코드는 사용자의 이름을 입력받는 HTML폼을 ㅇ리액트 제어 컴포넌트로 만든 코드이다.
+```js
+fuction NameForm(props) {
+  const [value, setValue] = useState('');
+
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  }
+
+  const handleSubmit = (event) => {
+    alert('입력한 이름 : ' + vlaue);
+    event.preventDefault();
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        이름 :
+        <input type="text" value{value} onChange={handleChange} />
+        <button type="submit">제출</button>
+      </label>
+    </form>
+  )
+}
+```
+
+#### <b>C.textarea태그</b>
+HTML에서는 <textarea>의 children으로 텍스트가 들어가는 형태이다.
+```html
+<textarea>
+  Hi, Textarea is located like this comment.
+</textarea>
+```
+#### <b>D.select 태그</b>
+select 태그는 드롭다운 목록을 보여주기 위한 HTML태그이다. 트롭다운 목록은 여러가지 옵션 중에서 하나를 선택할 수 있는 기능을 제공하며, HTML에서는 다음 코드와 같이 <option>태그를 <select>태그가 감싸는 형태로 사용한다.
+```html
+<select>
+  <option selected value="east">동</option>
+  <option value="west">서</option>
+  <option value="south">남</option>
+  <option value="north">북</option>
+</select>
+```
+<option>태그를 보면 기본적으로 선택되어있는 옵션의 경우에는 selected라는 속성을 가지고 있다. 이에 따르면 east라는 값을 가진 option이 기본적으로 선택되어있음을 알 수 있다. 리액트에서는 <option>태그에 selected 속성을 사용하지 않고 대신 <select> 태그에 value라는 속성을 사용하여 값을 표시한다. 다음 예시를 통해 더 자세하게 볼 수 있다.
+```js
+function FruitSelect(props) {
+  const [value, setValue] = useState('grape');
+
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  }
+
+  const handleSubmit = (event) => {
+    alert('선택한 과일 : ' + value);
+    event.preventDefault();
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        과일을 선택하세요 : 
+        <select value={value} onChange={handleChange}>
+          <option value="apple">사과</option>
+          <option value="banana">바나나</option>
+          <option value="grape">포도</option>
+          <option value="cherry">체리</option>
+        </select>
+      </label>
+    </form>
+  )
+}
+```
+만약 목록에서 다중선택이 가능하도록 설정하고 싶다면 아래와 같이 multiple이라는 속성값을 true로 하고, value로 선택된 옵션의 값ㅇ 들어있는 배열을 넣어 주면 된다.
+```js
+<select multiple={true} value={['B', 'C']}>
+```
+
+#### <b>E.File input 태그</b>
+File input 태그는 그 값이 읽기 전용이기에 리엑트에서는 비제어 컴포넌트가 된다.
+```js
+<input type="file" />
+```
+
+#### <b>F.여러 개의 입력 다루기</b>
+여러 개의 입력을 다뤄야 하는 경우에는 여러 개의 state를 선언하여 각각의 입력에 대해 사용하면 된다. 아래의 코드를 참고하면 된다.
+```js
+function Reservation(props) {
+  const [haveBreakfast, setHaveBreakfast] = useState(true);
+  const [numberOfGuest, setNumberOfGuest] = useState(2);
+
+  const handleSubmit = (event) => {
+    alert(`아침식사 여부 : ${haveBreakfast}, 방문객 수 : ${numberOfGuest}`);
+    event.preventDefault();
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        아침식사 여부 : 
+        <input 
+          type="checkbox"
+          checked={haveBreakfast}
+          onChange{(event) => {
+            setHaveBreakfast(event.target.checked);
+          }} />
+      </label>
+      <br />
+      <label>
+        방문객 수 : 
+        <input
+          type="number"
+          value={numberOfGuest}
+          onChange{(event) => {
+            setNumberOfGuest(event.target.value);
+          }} />
+      </label>
+      <button type="submit"></button>
+    </form>
+  );
+}
+```
+위의 코드와 같이 클래스 컴포넌트에서는 setState() 함수 하나로 모든 state의 값을 업데이트했지만 함수 컴포넌트에서는 각 state의 변수마다 set 함수가 따로 존재하기 때문에 위와 같은 형태로 각각의 set 함수를 사용해서 구현하면 된다.
+
+#### <b>G.Input Null Value</b>
+앞에서 배웠듯이 제어 컴포넌트에 value prop을 정해진 값으로 넣으면 코드를 수정하지 않는 한 값 변경이 불가능하다. 만약 value prop은 넣되 자유롭게 입력할 수 있게 만들고 싶다면 값에 undefined 혹은 null을 넣으면 된다. 아래의 코드를 참고하면 된다.
+```js
+ReactDoM.render(<input value="hi" />, rootNode);
+
+setTimeout(function() {
+    ReactDOM.render(<input value={null} />, rootNode);
+}, 1000);
+```
+이와 같이 input의 값이 hi로 정해져 있지만, 1초 후에 value가 null인 <input>태그가 렌더링되면서 입력 가능한 상태로 바뀐다.
+
+#### <b>H.실습</b>
+```js
+// SignUp.jsx
+
+import React, { useState } from "react";
+
+function SignUp(props) {
+    const [name, setName] = useState("");
+    const [gender, setGender] = useState("남자");
+
+    const handleChangeName = (event) => {
+        setName(event.target.value);
+    };
+
+    const handleChangeGender = (event) => {
+        setGender(event.target.value);
+    };
+
+    const handleSubmit = (event) => {
+        alert(`이름 : ${name}, 성별 : ${gender}`);
+        event.preventDefault();
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <label>
+                이름 : 
+                <input type="text" value={name} onChange={handleChangeName} />
+            </label>
+            <br />
+            <label>
+                성별 :
+                <select value={gender} onChange={handleChangeGender}>
+                    <option value="남자">남자</option>
+                    <option value="여자">여자</option>
+                </select>
+            </label>
+            <button type="submit">제출</button>
+        </form>
+    );
+}
+
+export default SignUp;
+```
+```js
+// index.js
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
+//import Library from './chapter_03/Library'; 
+//import Clock from './chapter_04/Clock';
+//import CommentList from './chapter_05/CommentList';
+//import NotificationList from './chapter_06/NotificationList';
+//import Accommodate from './chapter_07/Accommodate';
+//import midterm from './midterm';
+//import ConfirmButton from './chapter_08/ConfirmButton';
+//import LandingPage from './chapter_09/LandingPage';
+//import AttendanceBook from './chapter_10/AttendanceBook';
+import SignUp from './chapter_11/SignUp';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render (
+    <React.StrictMode>
+      <SignUp />
+    </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+```
+
+---
+## 04/27 9주차
 
 ### 오늘 배운 내용 : 이벤트와 핸들링 & 조건부 렌더링
 
@@ -390,7 +779,7 @@ reportWebVitals();
 
 ```
 
-
+---
 ## 04/13 7주차
 
 ### 오늘 배운 내용 : 훅(hook)
