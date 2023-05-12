@@ -1,6 +1,257 @@
 
 # 202130207 문기현의 README
 ---
+## 05/11 11주차 
+### 오늘 배운 내용 : State 끌어 올리기
+
+#### <b>A.Shared State</b>
+shared state는 말 그대로 공유받는 state를 의미한다. 자식 컴포넌트들이 가장 가까운 공통된 부모 컴포넌트의 state를 공유해서 사용하는 것이다. shared state는 어떤 컴포넌트의 state에 있는 데이터를 여러 개의 하위 컴포넌트에서 공통적으로 사용하는 경우를 지칭한다. 
+
+#### <b>B.하위 컴포넌트에서 State 공유하기</b>
+지금부터 ㄴ사용자로부터 온도를 입력받아서 각각 섭씨온도와 화씨온도로 표현하고 해당 온도에서 물이 끓는지 안 끓는지를 출력하는 컴포넌트를 만들어 보면서 state를 공유하는 방법에 대해 자세히 본다.
+##### <b>a.물의 끓음 여부를 알려주는 컴포넌트</b>
+먼저 섭씨온도 값을 props로 받아서 물이 끓는지에 대한 여부를 문자열로 출력하는 컴포넌트를 만들어본다.
+```js
+function BoilingVerdict(props) {
+  if(props.celsius >= 100) {
+    return <p>물이 끓는다</p>
+  }
+  return <p>물이 안 끓는다.</p>
+}
+```
+```js
+function Calculator(props) {
+  const [temperature, setTemperature] = useState('');
+
+  const handleChange = (event) => {
+    setTemperature(event.target.value);
+  }
+
+  return (
+    <fieldset>
+      <legend>섭씨 온도를 입력하세요.</legend>
+      <input 
+        value={temperature}
+        onChange={handleChange} />
+      <BoilingVerdict 
+          celsius={parseFloat(temperature)} />
+    </fieldset>
+  )
+}
+```
+##### <b>b.입력 컴포넌트 추출</b>
+```js
+const scaleNames = {
+  c: '섭씨',
+  f: '화씨'
+};
+
+function TemperatureInput(props) {
+  const [temperature, setTemperature] = useState('');
+
+  const handleChange = (event) => {
+    setTemperature(event.target.value);
+  }
+
+  return (
+    <fieldset>
+      <legend>온도를 입력하세요(단위:{scaleNames[props.scale]}):</legend>
+      <input value={temperature} onChange={handleChange} />
+    </fieldset>
+  )
+}
+```
+```js
+function Calculator(props) {
+  return(
+    <div>
+      <Temperature scale="c" />
+      <Temperature scale="f" />
+    </div>
+  )
+}
+```
+##### <b>c.온도 변환 함수 작성</b>
+```js
+function toCelsius(fahrenheit) {
+  return (fahrenheit - 32) * 5 / 9;
+}
+
+function toFahrenheit(celsius) {
+  return (celsius * 9 / 5) + 32;
+}
+```
+```js
+function tryConvert(temperature, convert) {
+  const input = parseFloat(temperature);
+  if(Number.isNaN(input)) {
+    return '';
+  }
+  const output = convert(input);
+  const rounded = Math.round(output * 1000) / 1000;
+  return rounded.toString();
+}
+```
+##### <b>d.Shared State 적용</b>
+```js
+return (
+  // 변경 전 : <input value={temperature} onChange={handleChange} />
+  <input value={props.temperature} onChange={handleChange} />
+)
+
+const handleChange = (event) => {
+    // 변경 전 : setTemperature(event.target.value);
+    props.setTemperature(event.target.value);
+  }
+```
+```js
+function TemperatureInput(props) {
+  const handleChange = (event) => {
+    props.onTemperatureChange(event.target.value);
+  }
+
+  return (
+    <fieldset>
+      <legend>온도를 입력하세요(단위:{scaleNames[props.scale]}):</legend>
+      <input value={props.temperature} onChange={handleChange} />
+    </fieldset>
+  )
+}
+```
+##### <b>e.Calculator 컴포넌트 변경</b>
+```js
+function Calculator(props) {
+  const [temperature, setTemperature] = useState('');
+  const [scale, setScale] = useState('c');
+
+  const handleCelsiusChange = (temperature) => {
+    setTemperature(temperature);
+    setScale('c');
+  }
+
+  const handleFahrenheitChange = (temperature) => {
+    setTemperature(temperature);
+    setScale('f');
+  }
+
+  const celsius = 
+        scale === "f" ? tryConvert(temperature, toCelsius) : temperature;
+  const fahrenheit = 
+        scale === "c" ? tryConvert(temperature, toFrahrenheit) : temperature;
+
+  return(
+    <div>
+      <TemperatureInput 
+        scale="c"
+        temperature={celsius}
+        onTemperatureChange={handleCelsiusChange}
+      />
+      <TemperatureInput 
+        scale="f"
+        temperature={fahrenheit}
+        onTemperatureChange={handleFahrenheitChange}
+      />
+      <BoilingVerdict celsius={parseFloat(celsius)} />
+    </div>
+  );
+}
+```
+#### <b>C.실습</b>
+```js
+// TemperatureInput.jsx
+const scaleNames = {
+    c: "썹씨",
+    f: "화씨",
+};
+
+function TemperatureInput(props){
+    const handleChange = (event) => {
+        props.onTemperatureChange(event.target.value);
+    };
+
+    return (
+        <fieldset>
+            <legend>
+                온도를 입력하세요(단위:{scaleNames[props.scale]}):
+            </legend>
+            <input value={props.temperature} onChange={handleChange} />
+        </fieldset>
+    );
+}
+
+export default TemperatureInput;
+```
+```js
+// Calculator.jsx
+import React from "react";
+import TemperatureInput from "./TemperatureInput";
+import { useState } from "react";
+
+function BoilingVerdict(props) {
+    if(props.celsius >= 100) {
+        return <p>물이 끓는다</p>
+    }
+    return <p>물이 끓지 않는다</p>
+}
+
+function toCelsius(fahrenheit) {
+    return((fahrenheit - 32) * 5) / 9;
+}
+
+function toFrahrenheit(celsius) {
+    return(celsius  * 9) / 5 + 32;
+}
+
+function tryConvert(temperature, convert) {
+    const input = parseFloat(temperature);
+    if(Number.isNaN(input)) {
+        return "";
+    }
+    const output = convert(input);
+    const rounded = Math.round(output * 1000) / 1000;
+    return rounded.toString();
+}
+
+function Calculator(props) {
+    const [temperature, setTemperature] = useState("");
+    const [scale, setScale] = useState("c");
+
+    const handleCelsiusChange = (temperature) => {
+        setTemperature(temperature);
+        setScale("c");
+    };
+
+    const handleFahrenheitChange = (temperature) => {
+        setTemperature(temperature);
+        setScale("f");
+    };
+
+    const celsius = 
+        scale === "f" ? tryConvert(temperature, toCelsius) : temperature;
+    const fahrenheit = 
+        scale === "c" ? tryConvert(temperature, toFrahrenheit) : temperature;
+
+    return (
+        <div>
+            <TemperatureInput 
+                scale="c"
+                temperature={celsius}
+                onTemperatureChange={handleCelsiusChange}
+            />
+            <TemperatureInput 
+                scale="f"
+                temperature={fahrenheit}
+                onTemperatureChange={handleFahrenheitChange}
+            />
+            <BoilingVerdict celsius={parseFloat(celsius)} />
+        </div>
+    );
+}
+
+export default Calculator;
+```
+
+---
 ## 05/04 10주차
 
 ### 오늘 배운 내용 : 리스트와 키 & 폼
