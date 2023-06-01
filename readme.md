@@ -1,6 +1,185 @@
 
 # 202130207 문기현의 README
 ---
+## 05/25 13주차
+
+### 오늘 배운 내용 : 컨텍스트 & 스타일링
+
+#### <b>E.여러 개의 컨텍스트 사용하기</b>
+여러 개의 컨텍스트를 동시에 사용하려면 Context.Provider를 중첩해서 사용한다. (예제 코드 393~394 참고).
+```js
+const ThemeContext = React.createContext('light');
+
+const UserContext = React.createContext({
+  name : 'Guest',
+});
+
+class App extends React.Component {
+  render() {
+    const { singedInUser, theme } = this.props;
+
+    return (
+      <ThemeContext.Provider value={theme}>
+        <UserContext.Provider value={signedInUser}>
+          <Layout />
+        </UserContext.Provider>
+      </ThemeContext.Provider>
+    );
+  }
+}
+
+function Layout() {
+  return (
+    <div>
+      <Sidebar />
+      <Content />
+    </div>
+  );
+}
+
+function Context() {
+  return (
+    <ThemeContext.Consumer>
+      {theme => (
+        <UserContext.Consumer>
+          {user => (
+            <ProfilePage user{user} theme={theme} />
+          )}
+        </UserContext.Consumer>
+      )}
+    </ThemeContext.Consumer>
+  );
+}
+```
+예제에서는 ThemeContext와 UserContext를 중첩해서 사용한다. 이런 방법으로 여러 개의 컨텍스트를 동시에 사용할 수 있다. 하지만, 두 개 이상의 컨텍스트 값이 자주 함께 사용될 경우 모든 값을 한 번에 제공하는 별도의 render prop 컴포넌트를 직접 만드는 것을 고려하는 것이 좋다.
+
+#### <b>F.useContext</b>
+함수형 커모넌트에서 컨텍스트를 사용하기 위해 컴포넌트를 매번 Consumer 컴포넌트로 감싸주는 것보다 더 좋은 방법이 있다. 바로 Chapter7에서 배운 Hook이다. useContext() 훅은 React.createContext() 함수 호출로 생성된 컨텍스트 객체를 인자로 받아서 현재 컨텍스트의 값을 리턴한다.
+```js
+function MyComponent(props) {
+  const value = useContext(MyContext);
+
+  return (
+    ...
+  )
+}
+```
+이 방법도 가장 가까운 상위 Provider로 부터 컨텍스트의 값을 받아온다. 만일 값이 변경되면 useContext() 훅을 사용하는 컴포넌트가 재 렌더링 된다. 또한, useContext() 훅을 사용할 때에는 파라미터로 컨텍스트 객체를 넣어줘야 한다는 것을 반드시 기억해야 한다.
+```js
+// 올바른 사용법
+useContext(MyContext);
+
+// 잘못된 사용법
+useContext(MyContext.Consumer);
+useContext(MyContext.Provider);
+```
+
+#### <b>G.실습</b>
+```js
+// ThemeContext.jsx
+
+import React from "react";
+
+const ThemeContext = React.createContext();
+ThemeContext.displayName = "ThemeContext";
+
+export default ThemeContext;
+```
+```js
+// MainContent.jsx
+
+import { useContext, useState } from "react";
+import ThemeContext from "./ThemeContext";
+
+function MainContent(props) {
+    const { theme, toggleTheme } = useContext(ThemeContext);
+
+    return (
+        <div
+            style={{
+                width: "100vw",
+                height: "100vh",
+                padding: "1.5rem",
+                backgroundColor: theme == "light" ? "white" : "black",
+                color : theme == "light" ? "black" : "white",
+            }}
+        >
+            <p>안녕하세요, 테마 변경이 가능한 웹사이트 입니다.</p>
+            <button onClick={toggleTheme}>테마 변경</button>
+        </div>
+    );
+}
+
+export default MainContent;
+```
+```js
+// DarkOrLight.jsx
+
+import { useState, useCallback } from "react";
+import ThemeContext from "./ThemeContext";
+import MainContent from "./MainContent";
+
+function DarkOfLight(props) {
+    const [theme, setTheme] = useState("light");
+
+    const toggleTheme = useCallback(() => {
+        if(theme == "light") {
+            setTheme("dark");
+        } else if(theme=="dark") {
+            setTheme("light");
+        }
+    }, [theme]);
+
+    return (
+        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+            <MainContent />
+        </ThemeContext.Provider>
+    );
+}
+
+export default DarkOfLight;
+```
+```js
+// index.js
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
+//import Library from './chapter_03/Library'; 
+//import Clock from './chapter_04/Clock';
+//import CommentList from './chapter_05/CommentList';
+//import NotificationList from './chapter_06/NotificationList';
+//import Accommodate from './chapter_07/Accommodate';
+//import midterm from './midterm';
+//import ConfirmButton from './chapter_08/ConfirmButton';
+//import LandingPage from './chapter_09/LandingPage';
+//import AttendanceBook from './chapter_10/AttendanceBook';
+//import SignUp from './chapter_11/SignUp';
+//import Calculator from './chapter_12/Calculator';
+//import ProfileCard from './chapter_13/ProfileCard';
+import DarkOfLight from './chapter_14/DarkOrLight';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render (
+    <React.StrictMode>
+      <DarkOfLight />
+    </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+```
+
+#### <b>A.CSS</b>
+##### <b>a.CSS란</b>
+Cascading Style Sheets는 웹 개발에서 웹을 꾸며주는 역할을 수행하는 기능이다. 
+
+---
 ## 05/18 12주차
 ### 오늘 배운 내용 : 합성 vs 상속 & 컨텍스트
 #### <b>A.합성</b>
@@ -227,7 +406,7 @@ reportWebVitals();
 ```
 
 ### <b>A.컨텍스트</b>
-기존의 일반적인 리액트에서는 데이커가 컴포넌트의 props를 통해 부모에서 자식으로 단방향으로 전달되었다. 컨텍스트는 리액트 컴포넌트들 사이에서 데이터를 기존의 props를 통해 전달하는 방식 대힌 '컴포넌트 트리를 통새 곧바로 컴포넌트에 전달하는 새로운 방식'을 제공한다. 이를 통해 어떤 컴포넌트라도 쉽게 데이터에 접근할 수 있다. 컨텍스트를 사용하면 일일히 props로 전달할 필요 없이 데이터를 필요로 하는 컴포넌트에 곧바로 데이터를 전달할 수 있다.
+기존의 일반적인 리액트에서는 데이커가 컴포넌트의 props를 통해 부모에서 자식으로 단방향으로 전달되었다. 컨텍스트는 리액트 컴포넌트들 사이에서 데이터를 기존의 props를 통해 전달하는 방식 대신 '컴포넌트 트리를 통새 곧바로 컴포넌트에 전달하는 새로운 방식'을 제공한다. 이를 통해 어떤 컴포넌트라도 쉽게 데이터에 접근할 수 있다. 컨텍스트를 사용하면 일일히 props로 전달할 필요 없이 데이터를 필요로 하는 컴포넌트에 곧바로 데이터를 전달할 수 있다.
 ### <b>컨텍스트를 사용해야 하는 경우</b>
 여러 컴포넌트에서 자주 필요로 하는 데이터는 로그인 여부, 로그인 정보, UI 테마, 현재 선택받은 언어 등이 있다. 이런 데이터들을 기존의 방식대로 컴포넌트의 props를 통해넘겨주는 예를 382page에서 보여준다.
 ```js
