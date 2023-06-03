@@ -16,12 +16,13 @@ import reportWebVitals from './reportWebVitals';
 //import SignUp from './chapter_11/SignUp';
 //import Calculator from './chapter_12/Calculator';
 //import ProfileCard from './chapter_13/ProfileCard';
-import DarkOfLight from './chapter_14/DarkOrLight';
+//import DarkOfLight from './chapter_14/DarkOrLight';
+import Blocks from './chapter_15/Blocks';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render (
     <React.StrictMode>
-      <DarkOfLight />
+      <Blocks />
     </React.StrictMode>
 );
 
